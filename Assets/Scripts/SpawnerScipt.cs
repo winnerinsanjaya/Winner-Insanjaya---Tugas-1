@@ -6,36 +6,79 @@ public class SpawnerScipt : MonoBehaviour
 {
     public Transform spawn1, spawn2, spawn3, spawn4, spawn5;
     public float jeda, defJeda;
-    public int humanCountdown, humanCountdownDef;
+    public static float  jumlahSpawnDef, jumlahSpawn;
 
     public GameObject enemy, human;
-    public int randomize, randomize2;
+    public int randomize, randomize2, jumlahSpawnEnemy;
 
+    [SerializeField] private bool canSpawn, isWait;
     // Start is called before the first frame update
     void Start()
     {
         defJeda = jeda;
-        humanCountdownDef = humanCountdown;
+        canSpawn = true;
+        jumlahSpawn = 0;
+        jumlahSpawnDef = jumlahSpawnEnemy;
     }
 
     // Update is called once per frame
     void Update()
     {
-        randomize2 = Random.Range(1, 5);
-        randomize = Random.Range(1, 6); 
-        if (jeda > 0)
+        isWait = GameManager.isWait;
+        
+        if(GameManager.enemyCounted < jumlahSpawnDef)
         {
-            jeda -= Time.deltaTime; 
+            canSpawn = true;
+        }
+       
 
-            return; 
+        randomize2 = Random.Range(1, 6);
+        randomize = Random.Range(1, 6);
+
+        if(jumlahSpawn == jumlahSpawnDef)
+        {
+            canSpawn = false;
         }
 
 
-         Spawn();
+        if (!isWait)
+        {
 
 
 
-        jeda = defJeda;
+
+            if (GameManager.enemyCounted >= jumlahSpawnDef)
+            {
+                GameManager.isWait = true;
+                GameManager.isFull = true;
+                canSpawn = false;
+                Debug.Log("Meneng tol");
+                return;
+            }
+
+
+
+            if (jeda > 0)
+            {
+                jeda -= Time.deltaTime;
+
+                return;
+            }
+
+
+
+            if (canSpawn)
+            {
+                
+                Spawn();
+            }
+
+
+
+
+            jeda = defJeda;
+        }
+        
     }
 
     public void Spawn() 
@@ -47,12 +90,10 @@ public class SpawnerScipt : MonoBehaviour
             if (randomize2 > 2)
             {
                 Instantiate(enemy, spawn1.position, Quaternion.identity);
-                humanCountdown -= 1;
             }
             else
             {
-                Instantiate(human, spawn1.position, Quaternion.identity); 
-                humanCountdown = humanCountdownDef; 
+                Instantiate(human, spawn1.position, Quaternion.identity);
             }
 
         }
@@ -62,12 +103,10 @@ public class SpawnerScipt : MonoBehaviour
             if (randomize2 > 2)
             {
                 Instantiate(enemy, spawn2.position, Quaternion.identity);
-                humanCountdown -= 1; 
             }
             else
             {
                 Instantiate(human, spawn2.position, Quaternion.identity);
-                humanCountdown = humanCountdownDef; 
             }
 
         }
@@ -77,12 +116,10 @@ public class SpawnerScipt : MonoBehaviour
             if (randomize2 > 2)
             {
                 Instantiate(enemy, spawn3.position, Quaternion.identity);
-                humanCountdown -= 1;
             }
             else
             {
                 Instantiate(human, spawn3.position, Quaternion.identity);
-                humanCountdown = humanCountdownDef;
             }
 
         }
@@ -92,12 +129,10 @@ public class SpawnerScipt : MonoBehaviour
             if (randomize2 > 2)
             {
                 Instantiate(enemy, spawn4.position, Quaternion.identity);
-                humanCountdown -= 1;
             }
             else
             {
                 Instantiate(human, spawn4.position, Quaternion.identity);
-                humanCountdown = humanCountdownDef;
             }
 
         }
@@ -107,14 +142,13 @@ public class SpawnerScipt : MonoBehaviour
             if (randomize2 > 2)
             {
                 Instantiate(enemy, spawn5.position, Quaternion.identity);
-                humanCountdown -= 1;
             }
             else
             {
                 Instantiate(human, spawn5.position, Quaternion.identity);
-                humanCountdown = humanCountdownDef;
             }
 
         }
+        jumlahSpawn += 1;
     }
 }
