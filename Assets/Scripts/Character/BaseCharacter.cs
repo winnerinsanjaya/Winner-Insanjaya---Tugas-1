@@ -2,112 +2,126 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-public abstract class BaseCharacter : MonoBehaviour, IClickable
+namespace ZombieTap.character
 {
-    [SerializeField]
-    private float speed, damage;
-
-    private GameObject enemyDeathEffect, manager;
-    public void setEffect(GameObject efx)
+    public abstract class BaseCharacter : MonoBehaviour, IClickable
     {
-        enemyDeathEffect = efx;
+        public System.Action OnUnitDie;
 
-    }
+        private bool isCountable;
 
-    public void Move()
-    {
-        transform.Translate(speed * Time.deltaTime * Vector2.down);
-        Debug.Log(speed);
-    }
+        [SerializeField]
+        private float speed, damage;
 
-
-    public void checkBorder()
-    {
-        Vector2 screenPosition = Camera.main.WorldToScreenPoint(transform.position);
-        if (screenPosition.y > Screen.width || screenPosition.y < 0)
+        private GameObject enemyDeathEffect, manager;
+        public void setEffect(GameObject efx)
         {
-            if(gameObject.tag == "human")
+            
+            enemyDeathEffect = efx;
+
+        }
+
+        public void Move()
+        {
+            transform.Translate(speed * Time.deltaTime * Vector2.down);
+        }
+
+
+        public void checkBorder()
+        {
+            Vector2 screenPosition = Camera.main.WorldToScreenPoint(transform.position);
+            if (screenPosition.y > Screen.width || screenPosition.y < 0)
             {
-                GameObject gmobject = GameObject.Find("MANAGER");
-                AddScore(gmobject);
+                if (gameObject.tag == "human")
+                {
+                    GameObject gmobject = GameObject.Find("MANAGER");
+                    AddScore(gmobject);
+                }
+
+                DamagePlayer(damage);
+                minEnemyLeft();
+                OnUnitDie?.Invoke();
+                gameObject.SetActive(false);
+            }
+        }
+
+        public void Kill(GameObject gmobject)
+        {
+            Instantiate(enemyDeathEffect, transform.position, Quaternion.identity);
+
+
+
+            AddScore(gmobject);
+
+            OnUnitDie?.Invoke();
+
+            Destroy(transform.parent.gameObject);
+            Destroy(gameObject);
+
+        }
+
+        public void Lose(GameObject gmobject)
+        {
+            gameOver(gmobject);
+        }
+
+        public void TakeDamage(GameObject gmobject)
+        {
+
+            //minEnemyLeft();
+
+            if (gameObject.tag == "enemy")
+            {
+                Kill(gmobject);
             }
 
-            minEnemyLeft();
-            DamagePlayer(damage);
-            Destroy(gameObject);
+            if (gameObject.tag == "human")
+            {
+                Lose(gmobject);
+            }
         }
-    }
 
-    public void Kill(GameObject gmobject)
-    {
-        Instantiate(enemyDeathEffect, transform.position, Quaternion.identity);
-
-        
-        GameObject foo = transform.parent.gameObject;
-        transform.parent = null;
-
-        AddScore(gmobject);
-
-        Destroy(foo);
-        Destroy(gameObject);
-
-    }
-
-    public void Lose(GameObject gmobject)
-    {
-        gameOver(gmobject);
-    }
-
-    public void TakeDamage(GameObject gmobject)
-    {
-
-        minEnemyLeft();
-
-        if (gameObject.tag == "enemy")
+        public void minEnemyLeft()
         {
-            Kill(gmobject);
+            manager = GameObject.Find("MANAGER");
+            core.GameManager gamemanager = manager.GetComponent<core.GameManager>();
+            gamemanager.minEnemyLeft();
         }
 
-        if (gameObject.tag == "human")
+        public void plusEnemyLeft()
         {
-            Lose(gmobject);
+            manager = GameObject.Find("MANAGER");
+            core.GameManager gamemanager = manager.GetComponent<core.GameManager>();
+            gamemanager.plusEnemyLeft();
         }
-    }
 
-    public void minEnemyLeft()
-    {
-        manager = GameObject.Find("MANAGER");
-        GameManager gamemanager = manager.GetComponent<GameManager>();
-        gamemanager.minEnemyLeft();
-    }
+        public void gameOver(GameObject gmobject)
+        {
+            core.GameManager gamemanager = gmobject.GetComponent<core.GameManager>();
+            gamemanager.GameOver();
+        }
 
-    public void gameOver(GameObject gmobject)
-    {
-        GameManager gamemanager = gmobject.GetComponent<GameManager>();
-        gamemanager.GameOver();
-    }
+        public void AddScore(GameObject gmobject)
+        {
+            core.ScoreManager scoreManager = gmobject.GetComponent<core.ScoreManager>();
+            scoreManager.AddScore();
+        }
 
-    public void AddScore(GameObject gmobject)
-    {
-        ScoreManager scoreManager = gmobject.GetComponent<ScoreManager>();
-        scoreManager.AddScore();
-    }
-
-    public void DamagePlayer(float dmg)
-    {
-        manager = GameObject.Find("MANAGER");
-        HealthManager healthmanager = manager.GetComponent<HealthManager>();
-        healthmanager.Damage(dmg);
-    }
+        public void DamagePlayer(float dmg)
+        {
+            manager = GameObject.Find("MANAGER");
+            core.HealthManager healthmanager = manager.GetComponent<core.HealthManager>();
+            healthmanager.Damage(dmg);
+        }
 
 
-    public void SetSpeed()
-    {
-        manager = GameObject.Find("MANAGER");
-        GameManager gamemanager = manager.GetComponent<GameManager>();
-        speed += ((gamemanager.currentWave - 2) / 2);
+        public void SetSpeed()
+        {
+            manager = GameObject.Find("MANAGER");
+            core.GameManager gamemanager = manager.GetComponent<core.GameManager>();
+            speed += ((gamemanager.currentWave - 2) / 2);
+
+        }
 
     }
-
 }

@@ -3,34 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HealthManager : MonoBehaviour
+namespace ZombieTap.core
 {
-
-    public Image _healthBar;
-
-    private float health;
-    void Start()
+    public class HealthManager : MonoBehaviour
     {
-        health = 100;
-    }
 
-    void Update()
-    {
-        _healthBar.fillAmount = health / 100;
-        checkHealth();
-    }
+        public Image _healthBar;
 
-    public void Damage(float dmg)
-    {
-        health -= dmg;
-    }
-
-    public void checkHealth()
-    {
-        if(health  <= 0)
+        private float health;
+        void Start()
         {
-            GameManager gamemanager = gameObject.GetComponent<GameManager>();
-            gamemanager.GameOver();
+            health = 100;
+        }
+
+        void Update()
+        {
+            _healthBar.fillAmount = health / 100;
+            checkHealth();
+        }
+
+        public void Damage(float dmg)
+        {
+            health -= dmg;
+        }
+
+        public void checkHealth()
+        {
+            if (health <= 0)
+            {
+                GameManager gamemanager = gameObject.GetComponent<GameManager>();
+                gamemanager.GameOver();
+            }
         }
     }
 }

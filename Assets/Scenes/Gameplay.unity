@@ -3252,6 +3252,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28aa89a757ee9df408accc3e134a3b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  humanPool:
+    variationUnits:
+    - unitBaseObject: {fileID: -3177070938438400856, guid: d54e2513298835b4ebfe94a935db3b6e, type: 3}
+  zombiePool:
+    variationUnits:
+    - unitBaseObject: {fileID: 5116656169505738473, guid: 84a5b840366844c49bb2d0fd89da22d3, type: 3}
   spawnPos:
   - {fileID: 590313618}
   - {fileID: 13768046}

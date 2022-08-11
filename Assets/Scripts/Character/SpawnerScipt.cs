@@ -2,82 +2,153 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawnerScipt : MonoBehaviour
+
+namespace ZombieTap.character
 {
-
-    public Transform[] spawnPos;
-    
-    [SerializeField]
-    private float jeda;
-    private float defJeda;
-
-    private int randomize, randomize2, jumlahSpawnEnemy;
-
-    public GameObject enemy, human;
-
-    [SerializeField] 
-    private bool canSpawn, isWait;
-
-    void Start()
+    public class SpawnerScipt : MonoBehaviour
     {
-        isWait = true;
+        [Header("Pool Section")]
+        [SerializeField] PoolUnit<HumanScript> humanPool;
+        [SerializeField] PoolUnit<EnemyScript> zombiePool;
 
-        defJeda = jeda;
+        public Transform[] spawnPos;
 
-        canSpawn = true;
+        [SerializeField]
+        private float jeda;
+        private float defJeda;
 
-        GameManager gamemanager = gameObject.GetComponent<GameManager>();
-    }
+        private int randomize, randomize2, jumlahSpawnEnemy;
 
-    void Update()
-    {
-        randomize2 = Random.Range(1, 6);
-        randomize = Random.Range(0, spawnPos.Length);
-        
+        public GameObject enemy, human;
 
-        if (!isWait)
+        [SerializeField]
+        private bool canSpawn, isWait;
+
+        void Start()
         {
+            isWait = true;
 
-            if (jeda > 0)
+            defJeda = jeda;
+
+            canSpawn = true;
+
+            core.GameManager gamemanager = gameObject.GetComponent<core.GameManager>();
+        }
+
+        void Update()
+        {
+            randomize2 = Random.Range(1, 6);
+            randomize = Random.Range(0, spawnPos.Length);
+
+
+            if (!isWait)
             {
-                jeda -= Time.deltaTime;
 
-                return;
+                if (jeda > 0)
+                {
+                    jeda -= Time.deltaTime;
+
+                    return;
+                }
+
+                if (canSpawn)
+                {
+
+                    Spawn();
+                }
+
+                jeda = defJeda;
+
+            }
+        }
+
+        public void Spawn()
+        {
+            core.GameManager gamemanager = gameObject.GetComponent<core.GameManager>();
+            gamemanager.AddEnemyCount();
+            BaseCharacter createdUnit;
+            if (randomize2 > 2)
+            {
+                createdUnit = zombiePool.GetObject();
+                createdUnit.transform.GetChild(0).gameObject.SetActive(true);
+                //Instantiate(enemy, spawnPos[randomize].position, Quaternion.identity);
+            }
+            else
+            {
+                createdUnit = humanPool.GetObject();
+                //Instantiate(human, spawnPos[randomize].position, Quaternion.identity);
             }
 
-            if (canSpawn)
+
+
+
+
+            createdUnit.gameObject.SetActive(true);
+            createdUnit.transform.position = spawnPos[Random.Range(0, spawnPos.Length)].position;
+            /*
+            bool asZombie = Random.Range(1, 101) > 10;
+            BaseUnit createdUnit = asZombie ? zombiePool.GetObject() : humanPool.GetObject();
+
+
+            createdUnit.gameObject.SetActive(true);
+            createdUnit.transform.position = spawnPos[Random.Range(0, spawnPos.Length)].position;
+            createdUnit.transform.SetParent(asZombie ? zombiePos : humanPos);
+            */
+        }
+
+        public void disIsWait()
+        {
+            isWait = false;
+        }
+
+        public void actIsWait()
+        {
+            isWait = true;
+        }
+
+
+
+        /////////
+        [System.Serializable]
+        public class PoolUnit<T> where T : BaseCharacter
+        {
+            [SerializeField] List<UnitSpawnData> variationUnits;
+            public T GetObject()
             {
-                
-                Spawn();
+                T createdUnit;
+
+                var variationTarget = variationUnits[Random.Range(0, variationUnits.Count)];
+                if (variationTarget.pool.Count <= 0)
+                {
+                    createdUnit = Instantiate(variationTarget.unitBaseObject);
+                    createdUnit.OnUnitDie += () => { StoreUnit(createdUnit); };
+                }
+                else
+                {
+                    createdUnit = variationTarget.pool.Dequeue();
+                }
+
+                return createdUnit;
             }
 
-            jeda = defJeda;
-            
+            public void StoreUnit(T unit)
+            {
+                for (int i = 0; i < variationUnits.Count; i++)
+                {
+                    if (variationUnits[i].unitBaseObject.GetType() == unit.GetType())
+                    {
+                        variationUnits[i].pool.Enqueue(unit);
+                        return;
+                    }
+                }
+            }
+
+            [System.Serializable]
+            class UnitSpawnData
+            {
+                public T unitBaseObject;
+                public Queue<T> pool = new Queue<T>();
+            }
         }
-    }
-
-    public void Spawn()
-    {
-        if (randomize2 > 2)
-        {
-            Instantiate(enemy, spawnPos[randomize].position, Quaternion.identity);
-        }
-        else
-        {
-            Instantiate(human, spawnPos[randomize].position, Quaternion.identity);
-        }
-
-        GameManager gamemanager = gameObject.GetComponent<GameManager>();
-        gamemanager.AddEnemyCount();
-    }
-
-    public void disIsWait()
-    {
-        isWait = false;
-    }
-
-    public void actIsWait()
-    {
-        isWait = true;
     }
 }

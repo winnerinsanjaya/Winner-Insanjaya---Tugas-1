@@ -3,35 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScoreManager : BaseCharacter, IScoreable
+namespace ZombieTap.core
 {
-    private int score;
-    public Text _scoreText, _highscoreText, _hghscoreText;
-
-    void Update()
+    public class ScoreManager : character.BaseCharacter, IScoreable
     {
-        _scoreText.text = "Score : " + score;
-        _highscoreText.text = "Highscore : " + PlayerPrefs.GetInt("highscore");
-        _hghscoreText.text = "Highscore : " + PlayerPrefs.GetInt("highscore");
-    }
+        private int score;
+        public Text _scoreText, _highscoreText, _hghscoreText;
 
-    public void AddScore()
-    {
-
-        Debug.Log("score = " + score.ToString());
-        score++;
-    }
-
-    public void checkHighScore()
-    {
-        if(score > PlayerPrefs.GetInt("highscore"))
+        void Update()
         {
-            setHighScore();
+            _scoreText.text = "Score : " + score;
+            _highscoreText.text = "Highscore : " + PlayerPrefs.GetInt("highscore");
+            _hghscoreText.text = "Highscore : " + PlayerPrefs.GetInt("highscore");
         }
-    }
 
-    public void setHighScore()
-    {
-        PlayerPrefs.SetInt("highscore", score);
+        public void AddScore()
+        {
+
+            Debug.Log("score = " + score.ToString());
+            score++;
+        }
+
+        public void checkHighScore()
+        {
+            if (score > PlayerPrefs.GetInt("highscore"))
+            {
+                setHighScore();
+            }
+        }
+
+        public void setHighScore()
+        {
+            PlayerPrefs.SetInt("highscore", score);
+        }
     }
 }

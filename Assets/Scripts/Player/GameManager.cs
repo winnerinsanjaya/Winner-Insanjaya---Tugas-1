@@ -4,128 +4,139 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+namespace ZombieTap.core
 {
-    public delegate void GameDelegate();
-    public static event GameDelegate OnGameStarted;
-
-    private int  enemyCount, enemyLeft;
-
-    public float currentWave;
-
-    private float defWaitTime;
-
-    [SerializeField] private float waitTime;
-
-    [SerializeField] private int enemyMuch;
-
-    private bool isWait, isFull;
-
-    public GameObject _gameoverPanel, _wavePanel, _inGamePanel;
-
-    public Text _waveText;
-
-    void Start()
+    public class GameManager : MonoBehaviour
     {
-        Time.timeScale = 1;
+        public delegate void GameDelegate();
+        public static event GameDelegate OnGameStarted;
 
-        currentWave = 1;
+        [SerializeField]
+        private int enemyCount, enemyLeft;
 
-        defWaitTime = waitTime;
+        public float currentWave;
 
-        isWait = true;
+        private float defWaitTime;
 
-        isFull = true;
+        [SerializeField] private float waitTime;
 
-        enemyLeft = enemyMuch;
-    }
+        [SerializeField] private int enemyMuch;
 
-    void Update()
-    {
+        private bool isWait, isFull;
 
-        _waveText.text = "Wave " + currentWave + "!";
+        public GameObject _gameoverPanel, _wavePanel, _inGamePanel;
 
+        public Text _waveText;
 
-        if(enemyCount == enemyMuch)
+        void Start()
         {
+            Time.timeScale = 1;
+
+            currentWave = 1;
+
+            defWaitTime = waitTime;
+
             isWait = true;
-            disableSpawn();
-            enemyCount = 0;
-        }
 
-        if(enemyLeft == 0)
-        {
             isFull = true;
-            disableSpawn();
+
             enemyLeft = enemyMuch;
         }
 
-
-        if (isWait && isFull)
+        void Update()
         {
 
-            _wavePanel.SetActive(true);
+            _waveText.text = "Wave " + currentWave + "!";
 
-            if (waitTime > 0)
+
+            if (enemyCount >= enemyMuch)
             {
-                waitTime -= Time.deltaTime;
-                return;
+                isWait = true;
+                disableSpawn();
+                enemyCount = 0;
             }
+
+            if (enemyLeft <= 0)
+            {
+                isFull = true;
+                //disableSpawn();
+            }
+
+
+            if (isWait && isFull)
+            {
+
+                _wavePanel.SetActive(true);
+
+                if (waitTime > 0)
+                {
+                    waitTime -= Time.deltaTime;
+                    return;
+                }
+
+                _wavePanel.SetActive(false);
+
+                waitTime = defWaitTime;
+
+                currentWave += 1;
+
+
+                enemyLeft = enemyMuch;
+
+                actSpawn();
+
+                isWait = false;
+
+                isFull = false;
+
+            }
+        }
+
+        public void goToScene(string scenename)
+        {
+            SceneManager.LoadScene(scenename);
+        }
+
+        public void GameOver()
+        {
+            Time.timeScale = 0;
+
+            ScoreManager scoreManager = gameObject.GetComponent<ScoreManager>();
+            scoreManager.checkHighScore();
 
             _wavePanel.SetActive(false);
 
-            waitTime = defWaitTime;
+            _gameoverPanel.SetActive(true);
 
-            currentWave += 1;
-
-            actSpawn();
-
-            isWait = false;
-
-            isFull = false;
-            
+            _inGamePanel.SetActive(false);
+            Debug.Log("gameover");
         }
-    }
 
-    public void goToScene(string scenename)
-    {
-        SceneManager.LoadScene(scenename);
-    }
+        public void AddEnemyCount()
+        {
+            enemyCount++;
+        }
 
-    public void GameOver()
-    {
-        Time.timeScale = 0;
+        public void minEnemyLeft()
+        {
+            enemyLeft--;
+        }
 
-        ScoreManager scoreManager = gameObject.GetComponent<ScoreManager>();
-        scoreManager.checkHighScore();
+        public void plusEnemyLeft()
+        {
+            enemyLeft++;
+        }
 
-        _wavePanel.SetActive(false);
+        public void disableSpawn()
+        {
+            character.SpawnerScipt scoreManager = gameObject.GetComponent<character.SpawnerScipt>();
+            scoreManager.actIsWait();
+        }
 
-        _gameoverPanel.SetActive(true);
-
-        _inGamePanel.SetActive(false);
-        Debug.Log("gameover");
-    }
-
-    public void AddEnemyCount()
-    {
-        enemyCount++;
-    }
-
-    public void minEnemyLeft()
-    {
-        enemyLeft--;
-    }
-
-    public void disableSpawn()
-    {
-        SpawnerScipt scoreManager = gameObject.GetComponent<SpawnerScipt>();
-        scoreManager.actIsWait();
-    }
-
-    public void actSpawn()
-    {
-        SpawnerScipt scoreManager = gameObject.GetComponent<SpawnerScipt>();
-        scoreManager.disIsWait();
+        public void actSpawn()
+        {
+            character.SpawnerScipt scoreManager = gameObject.GetComponent<character.SpawnerScipt>();
+            scoreManager.disIsWait();
+        }
     }
 }

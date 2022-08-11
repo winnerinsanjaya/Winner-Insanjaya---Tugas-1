@@ -1,12 +1,15 @@
-public class HumanScript : BaseCharacter
+namespace ZombieTap.character
 {
-    void Start()
+    public class HumanScript : BaseCharacter
     {
-        SetSpeed();
-    }
-    void Update()
-    {
-        Move();
-        checkBorder();
+        void Start()
+        {
+            SetSpeed();
+        }
+        void Update()
+        {
+            Move();
+            checkBorder();
+        }
     }
 }

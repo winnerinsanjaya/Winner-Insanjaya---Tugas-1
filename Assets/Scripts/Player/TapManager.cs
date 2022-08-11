@@ -2,27 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TapManager : BaseCharacter
+
+namespace ZombieTap.core
 {
-    public GameObject destroyEffect;
-    void Update()
+    public class TapManager : ZombieTap.character.BaseCharacter
     {
-        if (Input.GetMouseButtonDown(0))
+        public GameObject destroyEffect;
+        void Update()
         {
-            Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
-
-
-            if (hit.collider != null)
+            if (Input.GetMouseButtonDown(0))
             {
-                IClickable character = hit.collider.GetComponent<IClickable>();
-                if (character != null)
+                Vector2 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(worldPoint, Vector2.zero);
+
+
+                if (hit.collider != null)
                 {
-                    character.TakeDamage(gameObject);
+                    IClickable character = hit.collider.GetComponent<IClickable>();
+                    if (character != null)
+                    {
+                        character.TakeDamage(gameObject);
+                    }
                 }
             }
         }
     }
 }
-
-

@@ -1,44 +1,48 @@
 using UnityEngine;
-public class EnemyScript : BaseCharacter
+
+namespace ZombieTap.character
 {
-
-    private int randomType;
-    private float randomZigZagTime;
-
-    [SerializeField] Animator m_Animator;
-    [SerializeField] GameObject childMove;
-
-    void Start()
+    public class EnemyScript : BaseCharacter
     {
-        SetSpeed();
-        Randomize();
-        m_Animator = childMove.gameObject.GetComponent<Animator>();
-    }
-    void Update()
-    {
-        Move();
-        checkBorder();
 
+        private int randomType;
+        private float randomZigZagTime;
 
-        if (randomType > 1)
+        [SerializeField] Animator m_Animator;
+        [SerializeField] GameObject childMove;
+
+        void Start()
         {
-            ZigZag();
+            SetSpeed();
+            Randomize();
+            m_Animator = childMove.gameObject.GetComponent<Animator>();
         }
-    }
-
-    public void Randomize()
-    {
-
-        randomType = Random.Range(1, 5);
-        randomZigZagTime = Random.Range(1, 4);
-    }
-
-    public void ZigZag()
-    {
-        randomZigZagTime -= Time.deltaTime;
-        if (randomZigZagTime <= 0)
+        void Update()
         {
-            m_Animator.SetBool("isZigZag", true);
+            Move();
+            checkBorder();
+
+
+            if (randomType > 1)
+            {
+                ZigZag();
+            }
+        }
+
+        public void Randomize()
+        {
+
+            randomType = Random.Range(1, 5);
+            randomZigZagTime = Random.Range(1, 4);
+        }
+
+        public void ZigZag()
+        {
+            randomZigZagTime -= Time.deltaTime;
+            if (randomZigZagTime <= 0)
+            {
+                m_Animator.SetBool("isZigZag", true);
+            }
         }
     }
 }
