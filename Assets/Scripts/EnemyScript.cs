@@ -1,71 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-
-public class EnemyScript : MonoBehaviour
+public class EnemyScript : BaseCharacter
 {
-    public float speed, damage;
 
-    public GameObject destroyEffect;
+    private int randomType;
+    private float randomZigZagTime;
 
-    public bool isHuman;
+    [SerializeField] Animator m_Animator;
+    [SerializeField] GameObject childMove;
+
     void Start()
     {
-        speed = GameManager.enemySpeed;
-    }
+        randomType = Random.Range(1, 5);
+        randomZigZagTime = Random.Range(1, 4);
 
+        m_Animator = childMove.gameObject.GetComponent<Animator>();
+    }
     void Update()
     {
-        transform.Translate(speed * Time.deltaTime * Vector2.down);
-    }
 
-    private void OnMouseDown()
-    {
-        if (isHuman)
+        Move();
+        checkBorder();
+
+
+        if (randomType > 1)
         {
-            GameManager.health = 0;
-
-            Debug.Log("lose");
-        }
-
-        else
-        {
-            GameManager.score += 1;
-
-            Debug.Log("win");
-        }
-
-        GameManager.enemyCounted += 1;
-
-        DestroyEnemy();
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "pembatas")
-        {
-            if (isHuman)
+            randomZigZagTime -= Time.deltaTime;
+            if (randomZigZagTime <= 0)
             {
-                GameManager.score += 1;
+               m_Animator.SetBool("isZigZag", true);
             }
-
-            if (!isHuman)
-            {
-                GameManager.health -= damage;
-            }
-
-            GameManager.enemyCounted += 1;
-
-            Destroy(gameObject);
-
-            Debug.Log("Nyawa Berkurang");
         }
-    }
 
-    void DestroyEnemy()
-    {
-        Instantiate(destroyEffect, transform.position, Quaternion.identity);
-        Destroy(gameObject);
     }
 }

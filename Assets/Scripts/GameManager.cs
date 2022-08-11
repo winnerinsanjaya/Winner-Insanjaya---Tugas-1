@@ -6,28 +6,28 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static int score, currentWave, enemyCounted, highScore;
+    public delegate void GameDelegate();
+    public static event GameDelegate OnGameStarted;
 
-    public static float health;
+    private int currentWave, enemyCount;
 
-    public float waitTime, defWaitTime, enemySpd;
+    private float health, defWaitTime;
+
+    [SerializeField] private float waitTime;
+
+    [SerializeField] private int enemyMuch;
+
+    private bool isWait, isFull;
 
     public GameObject _gameoverPanel, _wavePanel;
 
     public Image _healthBar;
 
-    public Text _scoreText, _waveText, _highscoreText;
-
-    public static bool isWait, isFull;
-
-
-    public static float enemySpeed;
+    public Text _waveText;
 
     void Start()
     {
         Time.timeScale = 1;
-
-        score = 0;
 
         health = 100;
 
@@ -42,35 +42,20 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        enemySpeed = enemySpd;
 
         _healthBar.fillAmount = health / 100;
 
-        _scoreText.text = "Score : " + score;
-
         _waveText.text = "Wave " + currentWave + "!";
 
-        _highscoreText.text = "Highscore : " + highScore;
 
-
-        //DIE
-        if(health <= 0)
+        if(enemyCount == enemyMuch)
         {
-            Time.timeScale = 0;
-
-            if(score > highScore)
-            {
-                highScore = score;
-            }
-
-            _wavePanel.SetActive(false);
-
-            _gameoverPanel.SetActive(true);
-
-            Debug.Log("lose");
+            isWait = true;
+            enemyCount = 0;
         }
 
-        if (isWait && isFull)
+
+        if (isWait)
         {
 
             _wavePanel.SetActive(true);
@@ -87,13 +72,8 @@ public class GameManager : MonoBehaviour
 
             currentWave += 1;
 
-            enemyCounted = 0;
-
-            enemySpd += 1;
-
-            SpawnerScipt.jumlahSpawn = 0;
-
-            isFull = false;
+            SpawnerScipt scoreManager = gameObject.GetComponent<SpawnerScipt>();
+            scoreManager.disIsWait();
 
             isWait = false;
             
@@ -104,4 +84,24 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(scenename);
     }
+
+    public void GameOver()
+    {
+        Time.timeScale = 0;
+
+        ScoreManager scoreManager = gameObject.GetComponent<ScoreManager>();
+        scoreManager.checkHighScore();
+
+        _wavePanel.SetActive(false);
+
+        _gameoverPanel.SetActive(true);
+
+        Debug.Log("gameover");
+    }
+
+    public void AddEnemyCount()
+    {
+        enemyCount++;
+    }
+
 }
