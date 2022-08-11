@@ -5,13 +5,14 @@ using UnityEngine.UI;
 
 public class ScoreManager : BaseCharacter, IScoreable
 {
-    private int score, highscore;
-    public Text _scoreText, _highscoreText;
+    private int score;
+    public Text _scoreText, _highscoreText, _hghscoreText;
 
     void Update()
     {
         _scoreText.text = "Score : " + score;
-        _highscoreText.text = "Highscore : " + highscore;
+        _highscoreText.text = "Highscore : " + PlayerPrefs.GetInt("highscore");
+        _hghscoreText.text = "Highscore : " + PlayerPrefs.GetInt("highscore");
     }
 
     public void AddScore()
@@ -23,7 +24,7 @@ public class ScoreManager : BaseCharacter, IScoreable
 
     public void checkHighScore()
     {
-        if(score > highscore)
+        if(score > PlayerPrefs.GetInt("highscore"))
         {
             setHighScore();
         }
@@ -31,7 +32,6 @@ public class ScoreManager : BaseCharacter, IScoreable
 
     public void setHighScore()
     {
-        highscore = score;
-        score = 0;
+        PlayerPrefs.SetInt("highscore", score);
     }
 }

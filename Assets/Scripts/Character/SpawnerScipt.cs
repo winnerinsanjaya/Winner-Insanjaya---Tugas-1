@@ -75,4 +75,9 @@ public class SpawnerScipt : MonoBehaviour
     {
         isWait = false;
     }
+
+    public void actIsWait()
+    {
+        isWait = true;
+    }
 }

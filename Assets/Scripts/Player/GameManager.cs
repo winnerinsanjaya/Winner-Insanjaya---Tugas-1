@@ -9,9 +9,11 @@ public class GameManager : MonoBehaviour
     public delegate void GameDelegate();
     public static event GameDelegate OnGameStarted;
 
-    private int currentWave, enemyCount;
+    private int  enemyCount, enemyLeft;
 
-    private float health, defWaitTime;
+    public float currentWave;
+
+    private float defWaitTime;
 
     [SerializeField] private float waitTime;
 
@@ -19,17 +21,13 @@ public class GameManager : MonoBehaviour
 
     private bool isWait, isFull;
 
-    public GameObject _gameoverPanel, _wavePanel;
-
-    public Image _healthBar;
+    public GameObject _gameoverPanel, _wavePanel, _inGamePanel;
 
     public Text _waveText;
 
     void Start()
     {
         Time.timeScale = 1;
-
-        health = 100;
 
         currentWave = 1;
 
@@ -38,12 +36,12 @@ public class GameManager : MonoBehaviour
         isWait = true;
 
         isFull = true;
+
+        enemyLeft = enemyMuch;
     }
 
     void Update()
     {
-
-        _healthBar.fillAmount = health / 100;
 
         _waveText.text = "Wave " + currentWave + "!";
 
@@ -51,11 +49,19 @@ public class GameManager : MonoBehaviour
         if(enemyCount == enemyMuch)
         {
             isWait = true;
+            disableSpawn();
             enemyCount = 0;
         }
 
+        if(enemyLeft == 0)
+        {
+            isFull = true;
+            disableSpawn();
+            enemyLeft = enemyMuch;
+        }
 
-        if (isWait)
+
+        if (isWait && isFull)
         {
 
             _wavePanel.SetActive(true);
@@ -72,10 +78,11 @@ public class GameManager : MonoBehaviour
 
             currentWave += 1;
 
-            SpawnerScipt scoreManager = gameObject.GetComponent<SpawnerScipt>();
-            scoreManager.disIsWait();
+            actSpawn();
 
             isWait = false;
+
+            isFull = false;
             
         }
     }
@@ -96,6 +103,7 @@ public class GameManager : MonoBehaviour
 
         _gameoverPanel.SetActive(true);
 
+        _inGamePanel.SetActive(false);
         Debug.Log("gameover");
     }
 
@@ -104,4 +112,20 @@ public class GameManager : MonoBehaviour
         enemyCount++;
     }
 
+    public void minEnemyLeft()
+    {
+        enemyLeft--;
+    }
+
+    public void disableSpawn()
+    {
+        SpawnerScipt scoreManager = gameObject.GetComponent<SpawnerScipt>();
+        scoreManager.actIsWait();
+    }
+
+    public void actSpawn()
+    {
+        SpawnerScipt scoreManager = gameObject.GetComponent<SpawnerScipt>();
+        scoreManager.disIsWait();
+    }
 }

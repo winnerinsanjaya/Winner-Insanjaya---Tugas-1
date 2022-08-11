@@ -146,6 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0
+  damage: 0
   deathEfx: {fileID: 1110264763428426, guid: baf86c713392cfe44960616ce27d7fdd, type: 3}
 --- !u!1 &5116656169505738470
 GameObject:
@@ -246,6 +247,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2.5
-  deathEfx: {fileID: 1110264763428426, guid: baf86c713392cfe44960616ce27d7fdd, type: 3}
+  damage: 15
   m_Animator: {fileID: 0}
   childMove: {fileID: 84753219892522521}

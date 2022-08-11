@@ -10,26 +10,35 @@ public class EnemyScript : BaseCharacter
 
     void Start()
     {
-        randomType = Random.Range(1, 5);
-        randomZigZagTime = Random.Range(1, 4);
-
+        SetSpeed();
+        Randomize();
         m_Animator = childMove.gameObject.GetComponent<Animator>();
     }
     void Update()
     {
-
         Move();
         checkBorder();
 
 
         if (randomType > 1)
         {
-            randomZigZagTime -= Time.deltaTime;
-            if (randomZigZagTime <= 0)
-            {
-               m_Animator.SetBool("isZigZag", true);
-            }
+            ZigZag();
         }
+    }
 
+    public void Randomize()
+    {
+
+        randomType = Random.Range(1, 5);
+        randomZigZagTime = Random.Range(1, 4);
+    }
+
+    public void ZigZag()
+    {
+        randomZigZagTime -= Time.deltaTime;
+        if (randomZigZagTime <= 0)
+        {
+            m_Animator.SetBool("isZigZag", true);
+        }
     }
 }
