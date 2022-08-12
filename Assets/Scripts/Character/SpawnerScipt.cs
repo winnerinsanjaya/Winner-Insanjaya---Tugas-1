@@ -70,12 +70,16 @@ namespace ZombieTap.character
             if (randomize2 > 2)
             {
                 createdUnit = zombiePool.GetObject();
-                createdUnit.transform.GetChild(0).gameObject.SetActive(true);
+                EnemyScript enemysc = createdUnit.gameObject.GetComponent<EnemyScript>();
+                enemysc.starter();
+              //  createdUnit.transform.GetChild(0).gameObject.SetActive(true);
                 //Instantiate(enemy, spawnPos[randomize].position, Quaternion.identity);
             }
             else
             {
                 createdUnit = humanPool.GetObject();
+                HumanScript humansc = createdUnit.gameObject.GetComponent<HumanScript>();
+                humansc.starter();
                 //Instantiate(human, spawnPos[randomize].position, Quaternion.identity);
             }
 

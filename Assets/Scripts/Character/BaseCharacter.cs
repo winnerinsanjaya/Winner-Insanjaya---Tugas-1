@@ -11,7 +11,9 @@ namespace ZombieTap.character
         private bool isCountable;
 
         [SerializeField]
-        private float speed, damage;
+        private float damage;
+
+        private float speed;
 
         private GameObject enemyDeathEffect, manager;
         public void setEffect(GameObject efx)
@@ -24,7 +26,9 @@ namespace ZombieTap.character
         public void Move()
         {
             transform.Translate(speed * Time.deltaTime * Vector2.down);
+            Debug.Log(speed);
         }
+
 
 
         public void checkBorder()
@@ -55,8 +59,12 @@ namespace ZombieTap.character
 
             OnUnitDie?.Invoke();
 
+            minEnemyLeft();
+            gameObject.SetActive(false);
+            /*
             Destroy(transform.parent.gameObject);
             Destroy(gameObject);
+            */
 
         }
 
@@ -72,6 +80,7 @@ namespace ZombieTap.character
 
             if (gameObject.tag == "enemy")
             {
+                Debug.Log("anjing");
                 Kill(gmobject);
             }
 
@@ -121,6 +130,11 @@ namespace ZombieTap.character
             core.GameManager gamemanager = manager.GetComponent<core.GameManager>();
             speed += ((gamemanager.currentWave - 2) / 2);
 
+        }
+
+        public void orSpeed(float velo)
+        {
+            speed = velo;
         }
 
     }

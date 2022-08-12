@@ -6,26 +6,42 @@ namespace ZombieTap.character
     {
 
         private int randomType;
-        private float randomZigZagTime;
 
-        [SerializeField] Animator m_Animator;
+        [SerializeField]
+        private float randomZigZagTime, boundary, speedItm;
+
+        private float rBound, lBound;
+
+        public GameObject deathEfx;
+
         [SerializeField] GameObject childMove;
+
+        [SerializeField]
+        private bool isZigZag, zigzaged, isPlayerMovingRight;
+
+        private Vector3 pos, axis;
 
         void Start()
         {
-            SetSpeed();
-            Randomize();
-            m_Animator = childMove.gameObject.GetComponent<Animator>();
+            starter();
         }
         void Update()
         {
-            Move();
             checkBorder();
 
-
-            if (randomType > 1)
+            if (!isZigZag)
             {
-                ZigZag();
+                Move();
+            }
+
+            if (isZigZag)
+            {
+                MoveZigZag();
+            }
+
+            if (randomType > 1 && !isZigZag)
+            {
+                checkZigZag();
             }
         }
 
@@ -33,16 +49,55 @@ namespace ZombieTap.character
         {
 
             randomType = Random.Range(1, 5);
-            randomZigZagTime = Random.Range(1, 4);
+            randomZigZagTime = Random.Range(-2.0f, 3.0f);
         }
 
-        public void ZigZag()
+        public void checkZigZag()
         {
-            randomZigZagTime -= Time.deltaTime;
-            if (randomZigZagTime <= 0)
+            float currentY = gameObject.transform.position.y;
+            if (currentY <= randomZigZagTime)
             {
-                m_Animator.SetBool("isZigZag", true);
+                
+                isZigZag = true;
             }
         }
+
+        public void starter()
+        {
+            
+            orSpeed(speedItm);
+
+            rBound = transform.position.x + boundary;
+            lBound = transform.position.x - boundary;
+            isPlayerMovingRight = true;
+            axis = transform.right;
+            setEffect(deathEfx);
+            SetSpeed();
+            Randomize();
+        }
+
+
+        public void MoveZigZag()
+        {
+            transform.Translate(speedItm * Time.deltaTime * Vector2.down);
+
+
+            if (transform.position.x > rBound)
+                isPlayerMovingRight = false;
+            if (transform.position.x < lBound)
+                isPlayerMovingRight = true;
+
+            if (isPlayerMovingRight == true)
+            {
+                transform.Translate(Vector2.right * Time.deltaTime * speedItm *2);
+            }
+            if (isPlayerMovingRight == false)
+            {
+                transform.Translate(Vector2.left * Time.deltaTime * speedItm *2);
+            }
+
+        }
+
+
     }
 }
